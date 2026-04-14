@@ -1,0 +1,83 @@
+
+
+
+Validate:
+	1. Dữ liệu phải nhập (tất cả các trường)
+		radio, checkbox, select, date: Chọn
+	
+	2. Các kiểu dữ liệu đúng định dạng:
+		- Kiểu email
+		- Kiểu số điện thoại
+		- Kiểu mã (mã sản phẩm, mã sinh viên)
+		- Kiểu số: Phải trong phạm vi (ví dụ: từ 10 - 30, tối thiểu 0)
+		
+	3. Các dữ liệu phải duy nhất
+		- Email, số điện thoại, tên danh mục, ...
+		
+* Đa phần sẽ validate bên client:
+	- Dữ liệu phải nhập
+	- Đúng định dạng
+* Các trường hợp validate bên server:
+	- Dữ liệu phải duy nhất
+
+
+@NotNull	: Trừ String
+@NotEmpty	: Không rỗng (nhận dấu cách - khoảng trắng)
+@NotBlank	: Không rỗng, không khoảng trắng
+@Min
+@Max
+@Size
+@Pattern	: Kiểu String
+
+Bước 1: Thêm thư viện
+Các thư viện triển khai:
+1. Spring web mvc
+2. Thymeleaf 6
+3. Jakarta Common file upload 
+4. Jakarta validation api
+5. Hibernate validator
+
+Bước 2: Tạo cấu trúc phân lớp trong project
+	model:	entity
+			dto
+	repository
+	service
+	controller
+	config
+	custom_validator
+
+Bước 3: Cấu hình ứng dụng
+	- WebConfig : implements WebMvcConfigurer
+		Cấu hình view thymeleaf:
+		  + SpringResourceTemplateResolver
+		  + SpringTemplateEngine
+		  + ThymeleafViewResolver
+		  
+		Cấu hình Upload file:
+		  + Cấu hình giới hạn kích thước file upload trong WebInit
+			Khai báo hằng số:
+				private final String TMP_FILE = "";
+				private final Long MAX_FILE_SIZE = 10*1024*1024L;
+				private final Long MAX_REQUEST_SIZE = 50*1024*1024L;
+				private final Integer FILE_SIZE_THRE_SHOLD = 10*1024*1024;
+			Override method:
+				@Override
+				protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+					registration.setMultipartConfig(new MultipartConfigElement(TMP_FILE, MAX_FILE_SIZE, MAX_REQUEST_SIZE, FILE_SIZE_THRE_SHOLD));
+				}
+		  + Cấu hình MultilpartResolver, và resourceHandler trong WebConfig
+			
+	- WebInit	: extends AbstractAnnotaionConfigDispatcherInitializer
+
+* Thực hiện validate form:
+1. Tạo lớp DTO chứa dữ liệu form truyền lên controller
+2. Sử dụng các annotation để validate dữ liệu
+3. Tạo class controller
+4. Tạo view insert
+	- Thêm vào phần hiển thị lỗi nếu có
+	<small class="text-danger" th:if="${#fields.hasErrors('proId')}" th:errors="*{proId}"></small>
+	
+5. Tạo hàm method post trên server:
+	Thêm @Valid và BindingResult vào tham số hàm của controller
+	
+	
